@@ -307,7 +307,7 @@ module.exports = {
       const all = Object.values(MOCK).flat();
       const songInfo = hist.find(h => h.video_id === videoId) || all.find(s => s.video_id === videoId);
       
-      const query = songInfo ? `${songInfo.artist} ${songInfo.title}` : `official audio`;
+      const query = songInfo ? `${songInfo.artist} ${songInfo.title} official audio` : `official audio`;
       console.log(`🔄 YouTube blocked. Falling back to SoundCloud search for: ${query}`);
       
       const args = [

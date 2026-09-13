@@ -7,6 +7,7 @@ const fs         = require('fs');
 const fetch      = require('node-fetch');
 const db         = require('./db');
 const ytdlp      = require('./ytdlp');
+const ytmusic    = require('./ytmusic');
 const { buildSmartQueue } = require('./recommendations');
 
 const app  = express();
@@ -82,7 +83,7 @@ app.get('/api/home/:category', async (req, res) => {
   if (cached) return res.json({ songs: cached, from_cache: true });
 
   try {
-    const songs = await ytdlp.searchCategory(category, cat.query, 15);
+    const songs = await ytmusic.searchCategory(category, 15);
     if (songs.length) db.setCachedHome(category, songs);
     res.json({ songs, from_cache: false });
   } catch (err) {
@@ -90,14 +91,25 @@ app.get('/api/home/:category', async (req, res) => {
   }
 });
 
-// ─── Search ───────────────────────────────────────────────────────────────────
+// --- Endpoints ---
+
+// Get stream URL (still uses yt-dlp / soundcloud fallback)
+app.get('/api/streamurl/:id', async (req, res) => {
+  try {
+    const url = await ytdlp.getStreamUrl(req.params.id);
+    res.json({ url });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get('/api/search', async (req, res) => {
   const q = (req.query.q || '').trim();
   if (!q) return res.json({ songs: [] });
   const max = Math.min(parseInt(req.query.max) || 20, 30);
   db.addSearchHistory(q);
   try {
-    const songs = await ytdlp.search(q, max);
+    const songs = await ytmusic.search(q, max);
     res.json({ songs });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -122,7 +134,7 @@ app.get('/api/suggestions', (req, res) => {
 app.get('/api/info/:videoId', async (req, res) => {
   const { videoId } = req.params;
   try {
-    const info = await ytdlp.getInfo(videoId);
+    const info = await ytmusic.getInfo(videoId);
     if (!info) return res.status(404).json({ error: 'Not found' });
     res.json({ song: { ...info, liked: db.isLiked(videoId) } });
   } catch (err) {
@@ -135,7 +147,7 @@ app.post('/api/recommendations', async (req, res) => {
   const { song, limit = 12 } = req.body;
   if (!song || !song.video_id) return res.status(400).json({ error: 'song required' });
   try {
-    const related = await ytdlp.getRelated(song.video_id, 30);
+    const related = await ytmusic.getRelated(song.video_id, 30);
     const queue   = buildSmartQueue(song, related, limit);
     res.json({ queue });
   } catch (err) {

@@ -86,7 +86,7 @@ const MOCK = {
   ],
   newReleases: [
     { video_id:'Rx4jXAFHJjQ', title:'Chaleya', artist:'Arijit Singh & Shilpa Rao', duration:'3:23' },
-    { video_id:'BddP6PYo2gs', title:'Jamal Kudu', artist:'Shreya Ghoshal', duration:'3:10' },
+    { video_id:'O-M8mE433cI', title:'Jamal Kudu', artist:'Shreya Ghoshal', duration:'3:10' },
     { video_id:'MXvoh5zxPOk', title:'Woh Toh Hai Albela', artist:'Pritam', duration:'3:55' },
     { video_id:'9wGFHQR48sk', title:'Nayak Nahi Khalnayak', artist:'Sonu Nigam', duration:'4:12' },
     { video_id:'F4eLpUmB6yI', title:'Lunch', artist:'Billie Eilish', duration:'2:47' },
@@ -277,27 +277,40 @@ module.exports = {
     if (!ok) throw new Error('yt-dlp not installed. Run: pip3 install yt-dlp');
 
     const url = `https://www.youtube.com/watch?v=${videoId}`;
-    // If on cloud, YouTube often blackholes requests causing 15s timeouts per client.
-    // Try only the best bypass clients and fail fast (8 seconds) to trigger the SoundCloud fallback.
-    const clients = ['ios', 'mweb'];
-
-    for (const client of clients) {
-      try {
-        const args = [
-          url,
-          '-f', 'bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best',
-          '--get-url', '--no-playlist',
-          '--extractor-args', `youtube:player_client=${client}`,
-        ];
-        const out = await runYtDlp(args, 8_000);
-        const streamUrl = out.trim().split('\n')[0];
-        if (streamUrl && streamUrl.startsWith('http')) {
-          console.log(`✅ Stream URL fetched via [${client}] client for ${videoId}`);
-          return streamUrl;
+    
+    // --- Proxy Rotation to bypass Render datacenter block ---
+    try {
+      const fetch = require('node-fetch');
+      const r = await fetch('https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/http/data.txt');
+      if (r.ok) {
+        const text = await r.text();
+        const proxies = text.split('\n').filter(Boolean);
+        // Shuffle and take 3 proxies
+        const selected = proxies.sort(() => 0.5 - Math.random()).slice(0, 3);
+        
+        for (const proxy of selected) {
+          try {
+            console.log(`🔄 Trying proxy ${proxy} for ${videoId}...`);
+            const args = [
+              url,
+              '-f', 'bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best',
+              '--get-url', '--no-playlist',
+              '--proxy', proxy,
+              '--extractor-args', `youtube:player_client=ios`,
+            ];
+            const out = await runYtDlp(args, 15_000);
+            const streamUrl = out.trim().split('\n')[0];
+            if (streamUrl && streamUrl.startsWith('http')) {
+              console.log(`✅ Stream URL fetched via proxy [${proxy}] for ${videoId}`);
+              return streamUrl;
+            }
+          } catch (e) {
+            console.warn(`⚠️  Proxy ${proxy} failed: ${e.message.slice(0, 80)}`);
+          }
         }
-      } catch (e) {
-        console.warn(`⚠️  [${client}] client failed for ${videoId}: ${e.message.slice(0, 80)}`);
       }
+    } catch (e) {
+      console.warn('Proxy fetch failed:', e.message);
     }
     
     // --- SOUNDCLOUD FALLBACK (Bypasses YouTube datacenter blocks entirely) ---
@@ -378,5 +391,8 @@ module.exports = {
     return proc;
   },
 
-  getMockData(category) { return MOCK[category] || MOCK.trending; },
+  getMockData(category) { 
+    if (category === 'all') return MOCK;
+    return MOCK[category] || MOCK.trending; 
+  },
 };

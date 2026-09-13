@@ -1,0 +1,7 @@
+node_modules
+.env
+.git
+.gitignore
+*.log
+start.sh
+com.akash.vibeon.plist

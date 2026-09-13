@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0a0a0f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="VIBE_ON — Premium music streaming powered by yt-dlp. Discover trending, Punjabi, Haryanvi, Bollywood & global hits." />
+  <title>VIBE_ON — Music for Your Soul</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="VIBE_ON" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+  <!-- ═══ App Root ═══════════════════════════════════════════════════════ -->
+  <div id="app">
+
+    <!-- ── Splash Screen ───────────────────────────────────────────────── -->
+    <div id="splash" class="splash">
+      <div class="splash-logo">
+        <div class="splash-icon">🎵</div>
+        <div class="splash-text">VIBE<span>_ON</span></div>
+      </div>
+      <div class="splash-tagline">Your Music. Your Vibes.</div>
+      <div class="splash-loader"><div class="splash-bar"></div></div>
+    </div>
+
+    <!-- ── Views ───────────────────────────────────────────────────────── -->
+    <main id="views">
+      <!-- HOME -->
+      <section id="view-home" class="view active" role="main">
+        <!-- Header -->
+        <header class="home-header">
+          <div class="home-header-left">
+            <div class="home-greeting" id="home-greeting">Good evening</div>
+            <div class="home-logo">VIBE<span>_ON</span></div>
+          </div>
+          <div class="home-header-right">
+            <button class="icon-btn" id="btn-notifications" aria-label="Notifications">
+              <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </button>
+            <button class="avatar-btn" id="btn-profile" aria-label="Profile">
+              <div class="avatar">A</div>
+            </button>
+          </div>
+        </header>
+
+        <!-- Search Bar (click → search view) -->
+        <div class="search-trigger" id="search-trigger" role="button" tabindex="0" aria-label="Open search">
+          <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <span>Search songs, artists, playlists…</span>
+        </div>
+
+        <!-- Scrollable content -->
+        <div class="home-content" id="home-content">
+          <!-- Hero Banner -->
+          <div class="hero-banner" id="hero-banner">
+            <div class="hero-skeleton pulse"></div>
+          </div>
+
+          <!-- Category sections injected by home.js -->
+          <div id="home-sections"></div>
+
+          <!-- Artists -->
+          <section class="home-section" id="section-artists">
+            <div class="section-header">
+              <h2 class="section-title">🎤 Top Artists</h2>
+            </div>
+            <div class="artists-row" id="artists-row">
+              <div class="skeleton-row">
+                <div class="artist-skeleton pulse"></div>
+                <div class="artist-skeleton pulse"></div>
+                <div class="artist-skeleton pulse"></div>
+                <div class="artist-skeleton pulse"></div>
+                <div class="artist-skeleton pulse"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Curated Playlists -->
+          <section class="home-section" id="section-playlists">
+            <div class="section-header">
+              <h2 class="section-title">📋 Curated Playlists</h2>
+              <button class="view-all-btn">View All</button>
+            </div>
+            <div class="cards-row" id="playlists-row">
+              <div class="skeleton-row">
+                <div class="card-skeleton pulse"></div>
+                <div class="card-skeleton pulse"></div>
+                <div class="card-skeleton pulse"></div>
+                <div class="card-skeleton pulse"></div>
+              </div>
+            </div>
+          </section>
+
+          <div class="home-bottom-pad"></div>
+        </div>
+      </section>
+
+      <!-- SEARCH -->
+      <section id="view-search" class="view" role="main">
+        <header class="search-header">
+          <button class="back-btn" id="search-back" aria-label="Back">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
+          </button>
+          <div class="search-input-wrap">
+            <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input id="search-input" type="text" placeholder="Search songs, artists…" autocomplete="off" spellcheck="false" />
+            <button class="clear-btn hidden" id="search-clear" aria-label="Clear">✕</button>
+          </div>
+        </header>
+        <div class="search-content" id="search-content">
+          <!-- Dynamic: recent searches, suggestions, results -->
+        </div>
+      </section>
+
+      <!-- LIBRARY -->
+      <section id="view-library" class="view" role="main">
+        <header class="library-header">
+          <h1 class="library-title">Your Library</h1>
+          <button class="icon-btn" id="btn-new-playlist" aria-label="New playlist">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+          </button>
+        </header>
+        <!-- Tabs -->
+        <nav class="library-tabs" role="tablist">
+          <button class="lib-tab active" data-tab="liked"     role="tab">❤️ Liked</button>
+          <button class="lib-tab"        data-tab="history"   role="tab">🕐 History</button>
+          <button class="lib-tab"        data-tab="playlists" role="tab">📋 Playlists</button>
+          <button class="lib-tab"        data-tab="downloads" role="tab">⬇️ Downloads</button>
+        </nav>
+        <div class="library-content" id="library-content">
+          <!-- Dynamic -->
+        </div>
+      </section>
+
+      <!-- PROFILE -->
+      <section id="view-profile" class="view" role="main">
+        <div class="profile-page">
+          <div class="profile-hero">
+            <div class="profile-avatar-large">A</div>
+            <div class="profile-name">Akash</div>
+            <div class="profile-sub">Premium Listener 🎧</div>
+          </div>
+          <div class="profile-stats" id="profile-stats">
+            <div class="stat-card"><div class="stat-num" id="stat-songs">0</div><div class="stat-lbl">Songs Played</div></div>
+            <div class="stat-card"><div class="stat-num" id="stat-liked">0</div><div class="stat-lbl">Liked</div></div>
+            <div class="stat-card"><div class="stat-num" id="stat-playlists">0</div><div class="stat-lbl">Playlists</div></div>
+          </div>
+          <div class="profile-section">
+            <h3 class="profile-section-title">Settings</h3>
+            <div class="settings-list">
+              <div class="settings-item" id="setting-sleep-timer">
+                <div class="setting-icon">😴</div>
+                <div class="setting-info"><div class="setting-name">Sleep Timer</div><div class="setting-val" id="sleep-timer-val">Off</div></div>
+                <svg class="chevron" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+              <div class="settings-item" id="setting-quality">
+                <div class="setting-icon">🎵</div>
+                <div class="setting-info"><div class="setting-name">Audio Quality</div><div class="setting-val">Best Available</div></div>
+                <svg class="chevron" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+              <div class="settings-item" id="setting-clear-history">
+                <div class="setting-icon">🗑️</div>
+                <div class="setting-info"><div class="setting-name">Clear Play History</div></div>
+                <svg class="chevron" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+              <div class="settings-item" id="setting-ytdlp-status">
+                <div class="setting-icon">⚙️</div>
+                <div class="setting-info"><div class="setting-name">yt-dlp Status</div><div class="setting-val" id="ytdlp-status-val">Checking…</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ── Bottom Navigation ────────────────────────────────────────────── -->
+    <nav id="bottom-nav" class="bottom-nav" role="navigation" aria-label="Main navigation">
+      <button class="nav-item active" data-view="home"    aria-label="Home">
+        <svg class="nav-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><polyline points="9,21 9,12 15,12 15,21"/></svg>
+        <span>Home</span>
+      </button>
+      <button class="nav-item" data-view="search"  aria-label="Search">
+        <svg class="nav-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span>Search</span>
+      </button>
+      <button class="nav-item" data-view="library" aria-label="Library">
+        <svg class="nav-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>Library</span>
+      </button>
+      <button class="nav-item" data-view="profile" aria-label="Profile">
+        <svg class="nav-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </button>
+    </nav>
+
+    <!-- ── Mini Player ──────────────────────────────────────────────────── -->
+    <div id="mini-player" class="mini-player hidden" role="complementary" aria-label="Now playing">
+      <div class="mini-progress-bar" id="mini-progress-bar"><div class="mini-progress-fill" id="mini-progress-fill"></div></div>
+      <div class="mini-player-inner" id="mini-player-open">
+        <img class="mini-thumb" id="mini-thumb" src="" alt="Now playing thumbnail" onerror="this.style.display='none'" />
+        <div class="mini-info">
+          <div class="mini-title" id="mini-title">Not playing</div>
+          <div class="mini-artist" id="mini-artist"></div>
+        </div>
+        <div class="mini-controls">
+          <button class="mini-prev-btn" id="mini-prev-btn" aria-label="Previous">
+            <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+          </button>
+          <button class="mini-like-btn" id="mini-like-btn" aria-label="Like song">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" id="mini-heart"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+          <button class="mini-play-btn" id="mini-play-btn" aria-label="Play/Pause">
+            <svg id="mini-play-icon" width="26" height="26" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <button class="mini-next-btn" id="mini-next-btn" aria-label="Next">
+            <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2-8.14L11.03 12 8 14.14V9.86zM16 6h2v12h-2z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Now Playing Full Screen ──────────────────────────────────────── -->
+    <div id="now-playing" class="now-playing hidden" role="dialog" aria-modal="true" aria-label="Now Playing">
+      <!-- Dynamic background from thumbnail -->
+      <div class="np-bg" id="np-bg"></div>
+      <div class="np-bg-overlay"></div>
+
+      <!-- Drag handle -->
+      <div class="np-drag-handle" id="np-drag-handle"><div class="np-handle-bar"></div></div>
+
+      <div class="np-content">
+        <!-- Top Bar -->
+        <div class="np-top-bar">
+          <button class="np-back-btn" id="np-back-btn" aria-label="Close now playing">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
+          </button>
+          <div class="np-top-label">NOW PLAYING</div>
+          <button class="icon-btn" id="np-options-btn" aria-label="More options">
+            <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+          </button>
+        </div>
+
+        <!-- Artwork -->
+        <div class="np-artwork-wrap">
+          <div class="np-artwork-glow" id="np-artwork-glow"></div>
+          <div class="np-artwork-container" id="np-artwork-container">
+            <img class="np-artwork" id="np-artwork" src="" alt="Album art" />
+            <div class="np-artwork-shimmer"></div>
+          </div>
+        </div>
+
+        <!-- Song Info -->
+        <div class="np-info-row">
+          <div class="np-info">
+            <div class="np-title" id="np-title">Select a song</div>
+            <div class="np-artist" id="np-artist">—</div>
+          </div>
+          <button class="np-like-btn" id="np-like-btn" aria-label="Like">
+            <svg id="np-heart" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </div>
+
+        <!-- Waveform Canvas -->
+        <div class="np-waveform-wrap">
+          <canvas id="np-waveform" class="np-waveform"></canvas>
+        </div>
+
+        <!-- Progress -->
+        <div class="np-progress-wrap">
+          <div class="np-progress-bar" id="np-progress-bar" role="slider" aria-label="Seek">
+            <div class="np-progress-fill" id="np-progress-fill"></div>
+            <div class="np-progress-thumb" id="np-progress-thumb"></div>
+          </div>
+          <div class="np-time-row">
+            <span id="np-current-time">0:00</span>
+            <span id="np-duration">0:00</span>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="np-controls">
+          <button class="np-ctrl-btn" id="np-shuffle-btn" aria-label="Shuffle">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+          </button>
+          <button class="np-ctrl-btn np-prev-btn" id="np-prev-btn" aria-label="Previous">
+            <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+          </button>
+          <button class="np-play-btn" id="np-play-btn" aria-label="Play/Pause">
+            <svg id="np-play-icon" width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <button class="np-ctrl-btn np-next-btn" id="np-next-btn" aria-label="Next">
+            <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6h2v12h-2z"/></svg>
+          </button>
+          <button class="np-ctrl-btn" id="np-repeat-btn" aria-label="Repeat">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          </button>
+        </div>
+
+        <!-- Extra Controls Row -->
+        <div class="np-extra-row">
+          <button class="np-extra-btn" id="np-lyrics-btn" aria-label="Lyrics">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <span>Lyrics</span>
+          </button>
+          <button class="np-extra-btn" id="np-add-playlist-btn" aria-label="Add to playlist">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            <span>Add</span>
+          </button>
+          <button class="np-extra-btn" id="np-sleep-btn" aria-label="Sleep timer">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span id="sleep-btn-label">Sleep</span>
+          </button>
+          <button class="np-extra-btn" id="np-download-btn" aria-label="Download">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span id="download-btn-label">Save</span>
+          </button>
+          <button class="np-extra-btn" id="np-share-btn" aria-label="Share">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            <span>Share</span>
+          </button>
+        </div>
+
+        <!-- Up Next -->
+        <div class="np-upnext">
+          <div class="np-upnext-header">
+            <h3>Up Next</h3>
+            <span class="np-upnext-badge">Smart Queue</span>
+          </div>
+          <div class="np-upnext-list" id="np-upnext-list">
+            <div class="upnext-loading">Loading smart queue…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Lyrics Full-Screen View ──────────────────────────────────────── -->
+      <div class="np-lyrics-fullpage" id="np-lyrics-page">
+        <!-- Header -->
+        <div class="np-lyrics-header">
+          <div class="np-lyrics-song-info">
+            <div class="lyrics-sync-tag" id="lyrics-sync-tag">
+              <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              SYNCED
+            </div>
+            <div class="np-lyrics-song-title" id="lyrics-song-title">Song Title</div>
+            <div class="np-lyrics-song-artist" id="lyrics-song-artist">Artist Name</div>
+          </div>
+          <button class="np-lyrics-close-btn" id="lyrics-close-btn" aria-label="Close Lyrics">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <!-- Scrollable Lyrics -->
+        <div class="np-lyrics-fade-top"></div>
+        <div class="np-lyrics-body" id="lyrics-scroll-container">
+          <div id="lyrics-content">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+        <div class="np-lyrics-fade-bottom"></div>
+
+        <!-- Mini Controls at bottom -->
+        <div class="np-lyrics-mini-bar">
+          <div class="lyrics-mini-progress" id="lyrics-progress-bar">
+            <div class="lyrics-mini-fill" id="lyrics-progress-fill"></div>
+          </div>
+          <div class="lyrics-mini-controls">
+            <span class="lyrics-time" id="lyrics-current-time">0:00</span>
+            <button class="lyrics-ctrl-btn" id="lyrics-prev-btn">
+              <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+            </button>
+            <button class="lyrics-play-btn" id="lyrics-play-btn">
+              <svg id="lyrics-play-icon" width="28" height="28" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="lyrics-ctrl-btn" id="lyrics-next-btn">
+              <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+            </button>
+            <span class="lyrics-time" id="lyrics-duration">0:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Modals ────────────────────────────────────────────────────────── -->
+    <!-- Sleep Timer Modal -->
+    <div id="sleep-modal" class="modal-overlay hidden">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <h3 class="modal-title">😴 Sleep Timer</h3>
+        <div class="sleep-options">
+          <button class="sleep-opt" data-min="0">Off</button>
+          <button class="sleep-opt" data-min="5">5 min</button>
+          <button class="sleep-opt" data-min="10">10 min</button>
+          <button class="sleep-opt" data-min="15">15 min</button>
+          <button class="sleep-opt" data-min="30">30 min</button>
+          <button class="sleep-opt" data-min="45">45 min</button>
+          <button class="sleep-opt" data-min="60">1 hour</button>
+          <button class="sleep-opt" data-min="90">1.5 hours</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add to Playlist Modal -->
+    <div id="playlist-modal" class="modal-overlay hidden">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <h3 class="modal-title">Add to Playlist</h3>
+        <div id="playlist-modal-list" class="playlist-modal-list"></div>
+        <button class="modal-create-btn" id="modal-create-playlist-btn">+ Create New Playlist</button>
+      </div>
+    </div>
+
+    <!-- Options Modal -->
+    <div id="options-modal" class="modal-overlay hidden">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div id="options-song-info" class="options-song-info"></div>
+        <div class="options-list" id="options-list"></div>
+      </div>
+    </div>
+
+    <!-- Create Playlist Modal -->
+    <div id="create-playlist-modal" class="modal-overlay hidden">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <h3 class="modal-title">New Playlist</h3>
+        <input class="modal-input" id="new-playlist-name" type="text" placeholder="Playlist name…" maxlength="60" />
+        <input class="modal-input" id="new-playlist-desc" type="text" placeholder="Description (optional)" maxlength="120" />
+        <div class="modal-actions">
+          <button class="modal-cancel-btn" id="create-pl-cancel">Cancel</button>
+          <button class="modal-confirm-btn" id="create-pl-confirm">Create</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Audio Quality Modal -->
+    <div class="modal-overlay hidden" id="quality-modal">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <h3 class="modal-title">🎵 Audio Quality</h3>
+        <p style="color:var(--txt3);font-size:13px;margin:0 0 16px 0">Higher quality uses more data</p>
+        <div id="quality-list">
+          <div class="settings-item quality-opt" data-q="best" style="border-radius:12px;margin-bottom:8px">
+            <div class="setting-icon">🔥</div>
+            <div class="setting-info"><div class="setting-name">Best Available</div><div class="setting-val">Highest bitrate (default)</div></div>
+            <svg class="quality-check" width="18" height="18" fill="none" stroke="#00d4ff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div class="settings-item quality-opt" data-q="high" style="border-radius:12px;margin-bottom:8px">
+            <div class="setting-icon">🎧</div>
+            <div class="setting-info"><div class="setting-name">High</div><div class="setting-val">~320 kbps</div></div>
+            <svg class="quality-check hidden" width="18" height="18" fill="none" stroke="#00d4ff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div class="settings-item quality-opt" data-q="medium" style="border-radius:12px;margin-bottom:8px">
+            <div class="setting-icon">📻</div>
+            <div class="setting-info"><div class="setting-name">Medium</div><div class="setting-val">~128 kbps</div></div>
+            <svg class="quality-check hidden" width="18" height="18" fill="none" stroke="#00d4ff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div class="settings-item quality-opt" data-q="low" style="border-radius:12px">
+            <div class="setting-icon">📡</div>
+            <div class="setting-info"><div class="setting-name">Data Saver</div><div class="setting-val">~64 kbps — saves data</div></div>
+            <svg class="quality-check hidden" width="18" height="18" fill="none" stroke="#00d4ff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+        </div>
+        <div class="modal-actions" style="margin-top:16px">
+          <button class="modal-cancel-btn" id="quality-close">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications Modal -->
+    <div class="modal-overlay hidden" id="notifications-modal">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <h3 class="modal-title">🔔 Notifications</h3>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px">
+          <div class="settings-item" style="border-radius:12px">
+            <div class="setting-icon">🎵</div>
+            <div class="setting-info"><div class="setting-name">New Releases</div><div class="setting-val">From your favourite artists</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="notif-new-releases" checked><span class="toggle-track"></span></label>
+          </div>
+          <div class="settings-item" style="border-radius:12px">
+            <div class="setting-icon">🔥</div>
+            <div class="setting-info"><div class="setting-name">Trending Now</div><div class="setting-val">Weekly trending alerts</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="notif-trending"><span class="toggle-track"></span></label>
+          </div>
+          <div class="settings-item" style="border-radius:12px">
+            <div class="setting-icon">😴</div>
+            <div class="setting-info"><div class="setting-name">Sleep Timer</div><div class="setting-val">Alert before timer ends</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="notif-sleep" checked><span class="toggle-track"></span></label>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-cancel-btn" id="notifications-close">Close</button>
+          <button class="modal-confirm-btn" id="notifications-save">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast hidden" aria-live="polite"></div>
+
+
+  </div><!-- /#app -->
+
+  <!-- Hidden audio element -->
+  <audio id="audio-element" preload="none" crossorigin="anonymous"></audio>
+
+  <!-- JS Modules -->
+  <script src="/js/api.js"></script>
+  <script src="/js/player.js"></script>
+  <script src="/js/nowplaying.js"></script>
+  <script src="/js/home.js"></script>
+  <script src="/js/search.js"></script>
+  <script src="/js/library.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

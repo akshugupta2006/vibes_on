@@ -277,9 +277,9 @@ module.exports = {
     if (!ok) throw new Error('yt-dlp not installed. Run: pip3 install yt-dlp');
 
     const url = `https://www.youtube.com/watch?v=${videoId}`;
-    // Client fallback chain: ios (most trusted) → android → mweb → default web
-    // Each client has a different bot-detection profile; iOS/Android bypass most checks.
-    const clients = ['ios', 'android', 'mweb', 'web'];
+    // If on cloud, YouTube often blackholes requests causing 15s timeouts per client.
+    // Try only the best bypass clients and fail fast (8 seconds) to trigger the SoundCloud fallback.
+    const clients = ['ios', 'mweb'];
 
     for (const client of clients) {
       try {
@@ -289,7 +289,7 @@ module.exports = {
           '--get-url', '--no-playlist',
           '--extractor-args', `youtube:player_client=${client}`,
         ];
-        const out = await runYtDlp(args, 30_000);
+        const out = await runYtDlp(args, 8_000);
         const streamUrl = out.trim().split('\n')[0];
         if (streamUrl && streamUrl.startsWith('http')) {
           console.log(`✅ Stream URL fetched via [${client}] client for ${videoId}`);
@@ -299,7 +299,40 @@ module.exports = {
         console.warn(`⚠️  [${client}] client failed for ${videoId}: ${e.message.slice(0, 80)}`);
       }
     }
-    throw new Error(`All clients failed for video ${videoId}`);
+    
+    // --- SOUNDCLOUD FALLBACK (Bypasses YouTube datacenter blocks entirely) ---
+    try {
+      const db = require('./db');
+      const hist = db.getHistory(100);
+      const all = Object.values(MOCK).flat();
+      const songInfo = hist.find(h => h.video_id === videoId) || all.find(s => s.video_id === videoId);
+      
+      const query = songInfo ? `${songInfo.artist} ${songInfo.title}` : `official audio`;
+      console.log(`🔄 YouTube blocked. Falling back to SoundCloud search for: ${query}`);
+      
+      const args = [
+        `scsearch1:${query}`,
+        '-f', 'bestaudio[protocol^=http]/bestaudio',
+        '--get-url', '--no-playlist'
+      ];
+      // Run yt-dlp without the youtube-specific BASE_ARGS
+      const proc = spawn('yt-dlp', ['--no-warnings', '--no-check-certificate', ...args], { stdio: ['ignore', 'pipe', 'pipe'] });
+      const streamUrl = await new Promise((resolve, reject) => {
+        let stdout = '', stderr = '';
+        proc.stdout.on('data', d => { stdout += d; });
+        proc.stderr.on('data', d => { stderr += d; });
+        proc.on('close', code => code === 0 ? resolve(stdout.trim().split('\n')[0]) : reject(new Error(stderr.slice(0, 100))));
+      });
+      
+      if (streamUrl && streamUrl.startsWith('http')) {
+        console.log(`✅ Stream URL fetched via SoundCloud for ${videoId}`);
+        return streamUrl;
+      }
+    } catch (scErr) {
+      console.warn(`⚠️  SoundCloud fallback failed: ${scErr.message}`);
+    }
+
+    throw new Error(`All clients and fallbacks failed for video ${videoId}`);
   },
 
   async getRelated(videoId, limit = 15) {

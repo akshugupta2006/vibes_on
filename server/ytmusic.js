@@ -49,7 +49,8 @@ module.exports = {
   async search(query, max = 15) {
     try {
       const api = await getYT();
-      const results = await api.searchSongs(query);
+      const rawResults = await api.search(query);
+      const results = rawResults.filter(s => s.type === 'SONG' || s.type === 'VIDEO');
       if (!results || results.length === 0) throw new Error('Empty results');
       return results.slice(0, max).map(formatSong);
     } catch (e) {
@@ -66,20 +67,7 @@ module.exports = {
     }
   },
 
-  async searchCategory(category, max = 15) {
-    const categoryMap = {
-      'trending': 'Top Hits',
-      'newReleases': 'Latest Songs',
-      'punjabi': 'Latest Punjabi Hits',
-      'haryanvi': 'Haryanvi Songs',
-      'global': 'Global Top 50',
-      'bollywood': 'Bollywood Romantic',
-      'english': 'English Pop Hits',
-      'hiphop': 'Hip Hop Rap',
-      'lofi': 'Lofi Chill Beats'
-    };
-    const query = categoryMap[category] || category;
-    
+  async searchCategory(category, query, max = 15) {
     try {
       const api = await getYT();
       const results = await api.searchSongs(query);

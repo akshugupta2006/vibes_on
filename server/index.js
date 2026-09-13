@@ -83,7 +83,7 @@ app.get('/api/home/:category', async (req, res) => {
   if (cached) return res.json({ songs: cached, from_cache: true });
 
   try {
-    const songs = await ytmusic.searchCategory(category, 15);
+    const songs = await ytmusic.searchCategory(category, cat.query, 15);
     if (songs.length) db.setCachedHome(category, songs);
     res.json({ songs, from_cache: false });
   } catch (err) {
